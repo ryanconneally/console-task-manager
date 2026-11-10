@@ -10,9 +10,7 @@ public class Task {
 	private Priority priority;
 	
 	public Task(long id, String title, String description, Priority priority) {
-		if(title == null || title.isBlank()) {
-			throw new IllegalArgumentException("Task title must not be blank.");
-		}
+		validateTitle(title);
 		
 		if (priority == null) {
 			throw new IllegalArgumentException("Task priority must not be null.");
@@ -56,6 +54,22 @@ public class Task {
 		}
 		
 		this.priority = priority;
+	}
+	
+	public static void validateTitle(String title) {
+		if(title == null || title.isBlank()) {
+			throw new IllegalArgumentException("Task title must not be blank.");
+		}
+	}
+	
+	public void changeTitle(String title) {
+		validateTitle(title);
+		
+		this.title = title.strip();
+	}
+	
+	public void changeDescription(String description) {
+		this.description = description == null ? "" : description.strip();
 	}
 
 }

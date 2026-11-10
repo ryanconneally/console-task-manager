@@ -26,8 +26,11 @@ public class ConsoleMenu {
 			case "1" -> addTask();
 			case "2" -> viewTasks();
 			case "3" -> findTask();
-			case "4" -> System.out.println("Complete task selected.");
-			case "5" -> System.out.println("Delete task selected.");
+			case "4" -> completeTask();
+			case "5" -> deleteTask();
+			case "6" -> changeTaskTitle();
+			case "7" -> changeTaskPriority();
+			case "8" -> changeTaskDescription();
 			case "0" -> {
 				running = false;
 				System.out.println("Goodbye!");
@@ -46,6 +49,9 @@ public class ConsoleMenu {
 		System.out.println("3. Find tasks");
 		System.out.println("4. Complete task");
 		System.out.println("5. Delete task");
+		System.out.println("6. Change Task Title");
+		System.out.println("7. Change Task Priority");
+		System.out.println("8. Change Task Description");
 		System.out.println("0. Exit");
 		System.out.println("Choose an option: ");
 	}
@@ -147,6 +153,97 @@ public class ConsoleMenu {
 		System.out.println("Description: " + task.getDescription());
 		System.out.println("Priority: " + task.getPriority());
 		System.out.println("Completed: " + task.isCompleted());
+	}
+	
+	private void completeTask() {
+		long id = readTaskId();
+		
+		boolean completed = taskService.completeTask(id);
+		
+		if(completed) {
+			System.out.println("Task " + id + " is now completed.");
+		} else {
+			System.out.println("No task found with ID " + id);
+		}
+	}
+	
+	private void deleteTask() {
+		long id = readTaskId();
+		
+		Optional<Task> result = taskService.findTaskById(id);
+		
+		if(result.isEmpty()) {
+			System.out.println("No task could be found with ID " + id);
+			return;
+		}
+		
+		Task task = result.orElseThrow();
+		
+		displayTasks(task);
+		
+		System.out.println("Delete this task? Type yes to confirm: ");
+		String confirmation = scanner.nextLine().strip();
+		
+		if(!confirmation.equalsIgnoreCase("yes")) {
+			System.out.println("Deletion cancelled");
+			return;
+		}
+		
+		boolean deleted = taskService.deleteTask(id);
+		
+		if(deleted) {
+			System.out.println("Task deleted: " + id);
+		} else {
+			System.out.println("No task found with ID: " + id);
+		}
+	}
+	
+	private void changeTaskTitle() {
+		long id = readTaskId();
+		
+		System.out.println("Please enter the tasks new Title: ");
+		String title = scanner.nextLine();
+		
+		try {
+			boolean changed = taskService.changeTaskTitle(id, title);
+			
+			if (changed) {
+				System.out.println("Task Title changed: " + title);
+			} else {
+				System.out.println("No task found with ID: " + id);
+			}
+		} catch (IllegalArgumentException e) {
+			System.out.println("Could not change Title " + e.getMessage());
+		}
+	}
+	
+	private void changeTaskPriority() {
+		long id = readTaskId();
+		
+		Priority priority = readPriority();
+		
+		boolean changed = taskService.changeTaskPriority(id, priority);
+		
+		if(changed) {
+			System.out.println("Task Priority updated for task: " + id);
+		} else {
+			System.out.println("No task could be found with ID: " + id);
+		}
+	}
+	
+	private void changeTaskDescription() {
+		long id = readTaskId();
+		
+		System.out.println("New Description (Or leave blank to clear): ");
+		String description = scanner.nextLine();
+		
+		boolean changed = taskService.changeTaskDescription(id, description);
+		
+		if(changed) {
+			System.out.println("Task description updated for task: " + id);
+		} else {
+			System.out.println("No task could be found for ID: " + id);
+		}
 	}
 
 }

@@ -61,5 +61,44 @@ public class TaskService {
 		return tasks.remove(task);
 		
 	}
+	
+	public boolean changeTaskTitle(long id, String title) {
+		Optional<Task> result = findTaskById(id);
+		
+		if(result.isEmpty()) {
+			return false;
+		}
+		
+		Task task = result.orElseThrow();
+		task.changeTitle(title);
+		
+		return true;
+	}
+	
+	public boolean changeTaskPriority(long id, Priority priority) {
+		Optional<Task> result = findTaskById(id);
+		
+		if(result.isEmpty()) {
+			return false;
+		}
+		
+		Task task = result.orElseThrow();
+		task.changePriority(priority);
+		
+		return true;
+	}
+	
+	public boolean changeTaskDescription(long id, String description) {
+		Optional<Task> result = findTaskById(id);
+		
+		if(result.isEmpty()) {
+			return false;
+		}
+		
+		Task task = result.orElseThrow();
+		task.changeDescription(description);
+		
+		return true;
+	}
 
 }
